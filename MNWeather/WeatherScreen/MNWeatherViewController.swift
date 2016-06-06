@@ -31,7 +31,12 @@ class MNWeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
+        registerForegroundNotification()
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        reloadUI()
+    }
+    
+    func reloadUI () {
         showActivityIndicator()
         presenter.startLoadingWeatherInformation()
     }
@@ -65,5 +70,20 @@ class MNWeatherViewController: UIViewController {
         activityIndicatorView?.stopAnimating()
     }
     
+    private func registerForegroundNotification()  {
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: #selector(UIApplicationDelegate.applicationDidBecomeActive(_:)),
+            name: UIApplicationDidBecomeActiveNotification,
+            object: nil)
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    func applicationDidBecomeActive(notification: NSNotification) {
+        reloadUI()
+    }
 }
 
